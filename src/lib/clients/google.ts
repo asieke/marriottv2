@@ -42,9 +42,47 @@ export class GoogleClient {
 
 		try {
 			const res = await calendar.calendarList.list();
-			console.log('Calendar List:', res.data.items?.length);
+			return res.data.items?.map((item) => ({
+				user_id: this.user.id,
+				google_id: item.id,
+				timeZone: item.timeZone,
+				summary: item.summary,
+				description: item.description,
+				summaryOverride: item.summaryOverride
+			}));
 		} catch (error) {
 			console.error('Error fetching calendar list:', error);
+			return [];
+		}
+	}
+
+	/**************************************
+	 * Get a list of Calendars for the user
+	 **************************************/
+
+	async getEvents(google_id: string) {
+		await this.refreshToken();
+		const calendar = google.calendar({ version: 'v3', auth: this.oauth2Client });
+
+		try {
+			const res = await calendar.events.list({
+				calendarId: google_id,
+				timeMin: new Date().toISOString(),
+				maxResults: 10,
+				singleEvents: true,
+				orderBy: 'startTime'
+			});
+			return res.data.items?.map((item) => ({
+				title: item.summary,
+				start: item.start,
+				end: item.end,
+				color: parseInt(item.colorId || '0'),
+				description: item.description,
+				location: item.location
+			}));
+		} catch (error) {
+			console.error('Error fetching calendar list:', error);
+			return [];
 		}
 	}
 
@@ -83,6 +121,45 @@ export class GoogleClient {
 			console.error(error);
 			return [];
 		}
+	}
+
+	/**************************************
+	 * Get a list of Photo Albums
+	 **************************************/
+	async getPhotos(albumId: string) {
+		await this.refreshToken();
+		let nextPageToken: string | undefined = undefined;
+
+		const apiUrl = 'https://photoslibrary.googleapis.com/v1/mediaItems:search';
+
+		const urls = [];
+
+		for (let i = 0; i < 5; i++) {
+			const requestBody: object = { albumId, pageSize: 100, pageToken: nextPageToken };
+			const headers = {
+				Authorization: `Bearer ${this.oauth2Client.credentials.access_token}`,
+				'Content-Type': 'application/json'
+			};
+			try {
+				const response = await axios.post(apiUrl, requestBody, { headers });
+				const mediaItems = response.data.mediaItems || [];
+				console.log(mediaItems.length);
+				nextPageToken = response.data.nextPageToken;
+				console.log(response.data.nextPageToken);
+
+				urls.push(
+					...mediaItems.map((item: { baseUrl: string; mediaMetadata: Record<string, string> }) => ({
+						url: item.baseUrl,
+						created: item.mediaMetadata.creationTime
+					}))
+				);
+
+				if (!nextPageToken) break;
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		return urls as { url: string; created: string }[];
 	}
 
 	/**************************************

@@ -5,7 +5,8 @@ const config = {
 	kit: {
 		alias: {
 			$models: './src/models',
-			$lib: './src/lib'
+			$lib: './src/lib',
+			$types: './src/lib/types'
 		},
 		adapter: adapter()
 	},

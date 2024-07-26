@@ -7,7 +7,7 @@ export async function POST({ request, locals }) {
 		return new Response(JSON.stringify({ error: 'No user found' }), { status: 500 });
 	}
 
-	const data = await supabase.saveAlbum(user.id, album);
+	const data = await supabase.saveAlbum(album);
 
 	return new Response(JSON.stringify(data));
 }

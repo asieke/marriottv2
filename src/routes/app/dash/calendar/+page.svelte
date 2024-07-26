@@ -3,20 +3,23 @@
 	import axios from 'axios';
 
 	export let data: PageData;
+	$: ({ user, calendars, supabase } = data);
 
-	$: ({ user } = data);
-
-	const onCalendarClick = async () => {
-		if (!user) return;
-
-		const { data } = await axios.post('/app/api/calendars/list', { user });
-
-		console.log(data);
+	const handleForm = async () => {
+		await axios.post('/app/api/calendars/sync', calendars);
 	};
-
-	console.log(data.user);
 </script>
 
-<h1>Manage Calendars</h1>
+<h1 class="text-xl pb-8">Manage Calendars</h1>
 
-<button class="p-4 bg-blue-500" on:click={onCalendarClick}>Get Calendars</button>
+{#if calendars}
+	{#each calendars as calendar}
+		<div>
+			<label>
+				<input type="checkbox" name="isSelected" bind:checked={calendar.is_selected} />
+				{calendar.summary}, {calendar.google_id}
+			</label>
+		</div>
+	{/each}
+	<button class="bg-blue-500 p-2 mt-4 text-white rounded" on:click={handleForm}>Save</button>
+{/if}

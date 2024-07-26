@@ -38,12 +38,221 @@ export type Database = {
 					}
 				];
 			};
+			artists: {
+				Row: {
+					artist_url: string | null;
+					base64: string | null;
+					category: string | null;
+					created_at: string | null;
+					description: string | null;
+					end_year: string | null;
+					has_images: boolean | null;
+					id: number;
+					image_count: string | null;
+					img_url: string | null;
+					name: string | null;
+					region: string | null;
+					short_description: string | null;
+					start_year: string | null;
+				};
+				Insert: {
+					artist_url?: string | null;
+					base64?: string | null;
+					category?: string | null;
+					created_at?: string | null;
+					description?: string | null;
+					end_year?: string | null;
+					has_images?: boolean | null;
+					id: number;
+					image_count?: string | null;
+					img_url?: string | null;
+					name?: string | null;
+					region?: string | null;
+					short_description?: string | null;
+					start_year?: string | null;
+				};
+				Update: {
+					artist_url?: string | null;
+					base64?: string | null;
+					category?: string | null;
+					created_at?: string | null;
+					description?: string | null;
+					end_year?: string | null;
+					has_images?: boolean | null;
+					id?: number;
+					image_count?: string | null;
+					img_url?: string | null;
+					name?: string | null;
+					region?: string | null;
+					short_description?: string | null;
+					start_year?: string | null;
+				};
+				Relationships: [];
+			};
+			arts: {
+				Row: {
+					artist_id: number | null;
+					base64: string | null;
+					category: string | null;
+					created_at: string | null;
+					id: number;
+					sk: string | null;
+					title: string | null;
+				};
+				Insert: {
+					artist_id?: number | null;
+					base64?: string | null;
+					category?: string | null;
+					created_at?: string | null;
+					id: number;
+					sk?: string | null;
+					title?: string | null;
+				};
+				Update: {
+					artist_id?: number | null;
+					base64?: string | null;
+					category?: string | null;
+					created_at?: string | null;
+					id?: number;
+					sk?: string | null;
+					title?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'arts_artist_id_fkey';
+						columns: ['artist_id'];
+						isOneToOne: false;
+						referencedRelation: 'artists';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			calendars: {
+				Row: {
+					created_at: string;
+					description: string | null;
+					google_id: string;
+					id: number;
+					is_selected: boolean | null;
+					summary: string | null;
+					summaryOverride: string | null;
+					timeZone: string | null;
+					user_id: string | null;
+				};
+				Insert: {
+					created_at?: string;
+					description?: string | null;
+					google_id: string;
+					id?: number;
+					is_selected?: boolean | null;
+					summary?: string | null;
+					summaryOverride?: string | null;
+					timeZone?: string | null;
+					user_id?: string | null;
+				};
+				Update: {
+					created_at?: string;
+					description?: string | null;
+					google_id?: string;
+					id?: number;
+					is_selected?: boolean | null;
+					summary?: string | null;
+					summaryOverride?: string | null;
+					timeZone?: string | null;
+					user_id?: string | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: 'calendars_user_id_fkey';
+						columns: ['user_id'];
+						isOneToOne: false;
+						referencedRelation: 'users';
+						referencedColumns: ['id'];
+					}
+				];
+			};
+			events: {
+				Row: {
+					date: string;
+					facts: string[];
+					id: number;
+					image_query: string;
+					long_summary: string;
+					questions: string[];
+					summary: string;
+					title: string;
+				};
+				Insert: {
+					date: string;
+					facts: string[];
+					id: number;
+					image_query: string;
+					long_summary: string;
+					questions: string[];
+					summary: string;
+					title: string;
+				};
+				Update: {
+					date?: string;
+					facts?: string[];
+					id?: number;
+					image_query?: string;
+					long_summary?: string;
+					questions?: string[];
+					summary?: string;
+					title?: string;
+				};
+				Relationships: [];
+			};
+			sentences: {
+				Row: {
+					base64: string | null;
+					created_at: string;
+					id: number;
+					text: string;
+				};
+				Insert: {
+					base64?: string | null;
+					created_at?: string;
+					id?: number;
+					text: string;
+				};
+				Update: {
+					base64?: string | null;
+					created_at?: string;
+					id?: number;
+					text?: string;
+				};
+				Relationships: [];
+			};
 		};
 		Views: {
 			[_ in never]: never;
 		};
 		Functions: {
-			[_ in never]: never;
+			get_count_arts_with_image: {
+				Args: Record<PropertyKey, never>;
+				Returns: number;
+			};
+			get_random_art: {
+				Args: Record<PropertyKey, never>;
+				Returns: {
+					artist_id: number;
+					artist_name: string;
+					artist_url: string;
+					short_description: string;
+					start_year: string;
+					end_year: string;
+					region: string;
+					artist_category: string;
+					image_id: number;
+					sk: string;
+					title: string;
+					image_category: string;
+					image_url: string;
+					view_count: number;
+				}[];
+			};
 		};
 		Enums: {
 			[_ in never]: never;

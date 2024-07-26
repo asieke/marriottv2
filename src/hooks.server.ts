@@ -76,6 +76,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	event.locals.user = user;
 	if (user && event.locals.supabase) {
 		event.locals.googleClient = new GoogleClient(user, event.locals.supabase);
+		event.locals.supabase.setUser(user.id);
 	}
 
 	// event.locals.googleTokens = await getGoogleTokens(event.locals.supabase, user);

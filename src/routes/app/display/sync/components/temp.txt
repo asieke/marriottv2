@@ -1,0 +1,112 @@
+<script lang="ts">
+	import axios from 'axios';
+	import { db } from '$lib/clients/dexie';
+	import { onMount } from 'svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	const { photos, sentences } = data.serverData;
+	let stats = {
+		sentenceCount: 0,
+		photoCount: 0
+	};
+
+	onMount(async () => {
+		stats = await db.getStats();
+		console.log(data);
+	});
+
+	const syncPhotos = async () => {
+		//delete everything from the photos table
+		await db.photos.clear();
+		console.log('syncing photos');
+
+		const batchSize = 10;
+		for (let i = 0; i < photos.length; i += batchSize) {
+			const batch = photos.slice(i, i + batchSize);
+			const imageRequests = batch.map(async (data) => {
+				console.log(i, data.url);
+
+				const { data: imageData } = await axios.post('/app/api/images/convert', {
+					url: data.url
+				});
+
+				return { base64: imageData.base64, created: data.created };
+			});
+
+			const imageDataArray = await Promise.all(imageRequests);
+			const validImageDataArray = imageDataArray.filter((imageData) => imageData !== null);
+			for (const imageData of validImageDataArray) {
+				db.photos.add({ base64: imageData.base64, created: imageData.created });
+			}
+		}
+	};
+
+	const syncSentences = async () => {
+		await db.sentences.clear();
+		console.log('syncing photos');
+
+		const batchSize = 10;
+		for (let i = 0; i < sentences.length; i += batchSize) {
+			const batch = sentences.slice(i, i + batchSize);
+
+			const imageRequests = batch.map(async (sentence) => {
+				console.log(i, sentence.id, sentence.text);
+
+				const { data: imageData } = await axios.post('/app/api/images/convert', {
+					url: sentence.url
+				});
+
+				return { text: sentence.text, base64: imageData.base64 };
+			});
+
+			const imageDataArray = await Promise.all(imageRequests);
+			const validImageDataArray = imageDataArray.filter((imageData) => imageData !== null);
+			for (const imageData of validImageDataArray) {
+				db.upsertSentence(imageData.text, imageData.base64);
+			}
+		}
+	};
+</script>
+
+<div class="p-16">
+	<div class=" w-1/2 grid grid-cols-4 text-xl">
+		<div class="col-span-4 bg-gray-300">
+			<h1 class="text-xl font-bold">Syncing Data Locally</h1>
+		</div>
+
+		<div class="bg-gray-200">Data</div>
+		<div class="bg-gray-200">Server Data</div>
+		<div class="bg-gray-200">Client Data</div>
+		<div class="bg-gray-200">Sync</div>
+
+		<div>
+			<h2>Google Photo Albums</h2>
+		</div>
+		<div><h2>{photos.length}</h2></div>
+		<div><h2>{stats.photoCount || ''}</h2></div>
+		<div><button on:click={syncPhotos} class=" bg-blue-500">Sync Data</button></div>
+
+		<div>
+			<h2>Reading Sentences</h2>
+		</div>
+		<div><h2>{sentences.length}</h2></div>
+		<div><h2>{stats.sentenceCount || ''}</h2></div>
+		<div><button on:click={syncSentences} class=" bg-blue-500">Sync Sentences</button></div>
+	</div>
+</div>
+
+<style lang="postcss">
+	button {
+		@apply p-4 rounded shadow-sm hover:bg-blue-600 bg-blue-500 text-white;
+	}
+
+	.grid {
+		@apply border-collapse border-[1px] border-slate-500;
+	}
+
+	.grid > div {
+		@apply border-collapse border-slate-500 border-[1px] p-4 flex items-center;
+	}
+</style>

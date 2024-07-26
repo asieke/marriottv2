@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.onboarding h1 {
+	@apply text-5xl font-bold;
+}
+
+.onboarding h3 {
+	@apply text-2xl font-light px-8 text-slate-700;
+}
+
+.onboarding button {
+	@apply bg-blue-500 text-white font-bold py-2 px-4 rounded w-[200px] mx-auto;
+}
+
+.onboarding {
+	@apply flex flex-col space-y-6;
+}

@@ -1,16 +1,18 @@
 // import { getCalendars } from '$lib/clients/google';
 
-export async function POST({ locals }) {
-	console.log('[API - getCalendars]');
-	// console.log(request);
+export async function POST({ locals: { googleClient, supabase } }) {
+	const [googleCalendars, myCalendars] = await Promise.all([
+		googleClient.getCalendars(),
+		supabase.getCalendars()
+	]);
 
-	const { user, googleClient } = locals;
+	const calendars = googleCalendars?.map((calendar) => ({
+		...calendar,
+		// if there is a record in myCalendars with calendar.google_id, then use that value of is_selected
+		is_selected:
+			myCalendars?.find((myCalendar) => myCalendar.google_id === calendar.google_id)?.is_selected ||
+			false
+	}));
 
-	if (!user) {
-		return new Response(JSON.stringify({ hello: 'world' }));
-	}
-
-	await googleClient.getCalendars();
-
-	return new Response(JSON.stringify({ hello: 'world' }));
+	return new Response(JSON.stringify(calendars));
 }

@@ -19,7 +19,7 @@
 	<nav class="w-full p-4 bg-black text-white">
 		<div class="flex justify-between">
 			<div class="flex space-x-6">
-				<a href="/">Home</a>
+				<a href="/app/dash">Home</a>
 				<a href="/app/dash/calendar">Calendar</a>
 				<a href="/app/dash/photos">Photos</a>
 			</div>
