@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
-
 	import { PUBLIC_CALLBACK_URL } from '$env/static/public';
+
 	export let data;
 
 	$: ({ supabase } = data);
@@ -13,7 +13,7 @@
 			options: {
 				scopes:
 					'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/photoslibrary.readonly',
-				redirectTo: 'http://localhost:5173/auth/callback',
+				redirectTo: PUBLIC_CALLBACK_URL,
 				queryParams: {
 					access_type: 'offline',
 					prompt: 'consent'
