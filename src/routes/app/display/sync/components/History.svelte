@@ -50,6 +50,8 @@
 </div>
 <button bind:this={button} on:click={syncEvents}> Sync Events</button>
 
+<a href="/app/display">Go Back to Display</a>
+
 <style lang="postcss">
 	button:disabled {
 		@apply bg-black;

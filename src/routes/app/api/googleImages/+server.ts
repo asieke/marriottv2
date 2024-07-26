@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const queryGoogleImages = async (text: string) => {
-	const search_engine_id = '46a07720761da4687';
-	const api_key = 'AIzaSyCkeSdOTQLa5mz2H9EcIy2XAQuWFzV4e6Y';
+	const search_engine_id = 'f22680333d8644827';
+	const api_key = 'AIzaSyA0l1gpyEhGSp1sys6lSOpnK6ePKleJjC0';
 	const num_results = 6;
 
 	const queryUrl = `https://www.googleapis.com/customsearch/v1?q=${text}&cx=${search_engine_id}&key=${api_key}&searchType=image&num=${num_results}`;

@@ -45,7 +45,7 @@
 			<DateTime />
 		</div>
 		<div class="component h-[25%]">
-			<!-- <Weather /> -->
+			<Weather />
 		</div>
 		<div class="component h-[50%]">
 			<Photo />
@@ -66,7 +66,7 @@
 	</div>
 	<div class="column">
 		<div class="component h-[75%]">
-			<!-- <Calendar /> -->
+			<Calendar />
 		</div>
 		<div class="component h-[25%]">
 			<Sentence />
