@@ -19,6 +19,14 @@
 	let modalShowing = false;
 
 	onMount(async () => {
+		// refresh the page every 45 minutes
+		setInterval(
+			() => {
+				location.reload();
+			},
+			1000 * 60 * 55
+		);
+
 		// add an event listener that listens for the '0' key to be pressed
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === '0') {
