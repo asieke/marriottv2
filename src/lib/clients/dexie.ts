@@ -34,6 +34,8 @@ export interface Event {
 	title: string;
 	date: string;
 	summary: string;
+	facts: string[];
+	questions: string[];
 }
 
 export class MySubClassedDexie extends Dexie {
@@ -90,10 +92,14 @@ export class MySubClassedDexie extends Dexie {
 	}
 
 	async getRandomEvent() {
+		const num = await lf.getMaxFileName('events');
+
+		console.log('getting random event', num);
+
 		const record = await this.events
 			.orderBy('id')
 			//TODO UPDATE THIS
-			.offset(Math.floor(Math.random() * (await this.events.count())))
+			.offset(Math.floor(Math.random() * num))
 			.limit(1)
 			.first();
 
