@@ -10,7 +10,7 @@ class LocalFiles {
 	async init(force = false) {
 		if (force) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			this.handle = await (window as any).showDirectoryPicker();
+			this.handle = await (window as any).showDirectoryPicker({ mode: 'readwrite' });
 			await set('localFolder', this.handle);
 		} else {
 			this.handle =

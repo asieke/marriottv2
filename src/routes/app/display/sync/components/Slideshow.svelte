@@ -61,11 +61,8 @@
 	</div>
 	<div class="h-full bg-blue-500" style="width: {pct}%"></div>
 </div>
-{#if pct !== 100}
-	<button bind:this={button} on:click={syncPhotos}> Sync Art</button>
-{:else}
-	<button on:click={onNext}>Next</button>
-{/if}
+<button bind:this={button} on:click={syncPhotos}> Sync Art</button>
+<button on:click={onNext}>Next</button>
 
 <style lang="postcss">
 	button:disabled {
