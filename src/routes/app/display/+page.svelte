@@ -45,7 +45,7 @@
 	<Modal />
 {/if}
 <div
-	class="grid grid-cols-4 gap-[1vw] px-[1vw] py-[2vh] h-[100vh] w-[100vw]"
+	class="grid grid-cols-4 gap-[1vw] px-[3vw] py-[3vh] h-[100vh] w-[100vw]"
 	style="background: url('/backgrounds/{random}.jpg') no-repeat center center fixed; background-size: cover;"
 >
 	<div class="column">
@@ -87,6 +87,6 @@
 		@apply p-[20px] overflow-hidden bg-black/80 rounded-lg shadow-lg;
 	}
 	.column {
-		@apply h-[96vh] flex flex-col space-y-[1vh];
+		@apply h-[94vh] flex flex-col space-y-[1vh];
 	}
 </style>
