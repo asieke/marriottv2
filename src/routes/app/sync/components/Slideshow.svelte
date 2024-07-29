@@ -24,8 +24,6 @@
 
 		for (let i = 0; i < photos.length; i += chunkSize) {
 			const chunk = photos.slice(i, i + chunkSize);
-			synced = i;
-			pct = Math.round((synced / total) * 100);
 
 			// Process each chunk concurrently
 			await Promise.all(
@@ -35,17 +33,13 @@
 					});
 
 					const photoIndex = i + index;
-					await lf.saveBase64File('slideshow', `${photoIndex}`, imageData.base64);
-					await db.photos.add({ id: photoIndex, created: photo.created });
-
-					console.log(imageData);
+					await db.photos.add({ id: photoIndex, created: photo.created, base64: imageData.base64 });
 				})
 			);
 
-			console.log(`Processed batch: ${i / chunkSize + 1}`);
+			synced += chunk.length;
 		}
 
-		pct = 100;
 		button.disabled = false;
 	};
 </script>
@@ -59,9 +53,12 @@
 			{synced} / {total}
 		{/if}
 	</div>
-	<div class="h-full bg-blue-500" style="width: {pct}%"></div>
+	<div
+		class="h-full bg-blue-500"
+		style="width: {total === 0 ? 0 : Math.round((100 * synced) / total)}%"
+	></div>
 </div>
-<button bind:this={button} on:click={syncPhotos}> Sync Art</button>
+<button bind:this={button} on:click={syncPhotos}> Sync Google Photos</button>
 <button on:click={onNext}>Next</button>
 
 <style lang="postcss">

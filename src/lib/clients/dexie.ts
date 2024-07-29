@@ -1,32 +1,35 @@
 import Dexie, { type EntityTable } from 'dexie';
-import { lf } from '$lib/clients/localfiles';
 
 export interface Photo {
 	id: number;
 	created: string;
+	base64: string;
 }
 
 export interface Sentence {
 	id: number;
 	text: string;
+	base64: string;
 }
 
 export interface Artist {
 	id: number;
-	name: string;
-	description: string;
-	short_description: string;
-	category: string;
-	region: string;
-	start_year: string;
-	end_year: string;
+	name: string | null;
+	description: string | null;
+	short_description: string | null;
+	category: string | null;
+	region: string | null;
+	start_year: string | null;
+	end_year: string | null;
+	base64: string | null;
 }
 
 export interface Art {
 	id: number;
 	artist_id: number;
 	title: string;
-	category: string;
+	category: string | null;
+	base64: string;
 }
 
 export interface Event {
@@ -36,6 +39,7 @@ export interface Event {
 	summary: string;
 	facts: string[];
 	questions: string[];
+	base64: string;
 }
 
 export class MySubClassedDexie extends Dexie {
@@ -48,15 +52,12 @@ export class MySubClassedDexie extends Dexie {
 	constructor() {
 		super('LocalDB');
 		this.version(1).stores({
-			photos: '++id, created', // primary key "id" (for the runtime!)
-			sentences: '++id, text', // primary key "id" (for the runtime!)
-			artists: '++id, name, description, short_description, category, region, start_year, end_year', // primary key "id" (for the runtime!)
-			arts: '++id, artist_id, title, category', // primary key "id" (for the runtime!)
-			events: '++id, title, date, summary' // primary key "id" (for the runtime!)
-		});
-
-		this.on('populate', () => {
-			console.log('populating!!');
+			photos: '++id, base64, created', // primary key "id" (for the runtime!)
+			sentences: '++id, base64, text', // primary key "id" (for the runtime!)
+			artists:
+				'++id, base64, name, description, short_description, category, region, start_year, end_year', // primary key "id" (for the runtime!)
+			arts: '++id, base64, artist_id, title, category', // primary key "id" (for the runtime!)
+			events: '++id, base64, title, date, summary' // primary key "id" (for the runtime!)
 		});
 	}
 
@@ -67,11 +68,7 @@ export class MySubClassedDexie extends Dexie {
 			.limit(1)
 			.first();
 
-		if (!record) return;
-		const file = await lf.getFile('sentences', `${record.id}.png`);
-		const image = URL.createObjectURL(file);
-
-		return { ...record, image };
+		return record ? { ...record, base64: 'data:image/png;base64,' + record.base64 } : null;
 	}
 
 	async getRandomPhoto() {
@@ -81,33 +78,23 @@ export class MySubClassedDexie extends Dexie {
 			.limit(1)
 			.first();
 
-		console.log('getting random photo', record);
-
-		if (!record) return;
-
-		const file = await lf.getFile('slideshow', `${record.id}.png`);
-		const image = URL.createObjectURL(file);
-
-		return { ...record, image };
+		return record
+			? {
+					...record,
+					created: record.created.substring(0, 10),
+					base64: 'data:image/png;base64,' + record.base64
+				}
+			: null;
 	}
 
 	async getRandomEvent() {
-		const num = await lf.getMaxFileName('events');
-
-		console.log('getting random event', num);
-
 		const record = await this.events
 			.orderBy('id')
-			//TODO UPDATE THIS
-			.offset(Math.floor(Math.random() * num))
+			.offset(Math.floor(Math.random() * (await this.events.count())))
 			.limit(1)
 			.first();
 
-		if (!record) return null;
-		const file = await lf.getFile('events', `${record.id}.png`);
-		const image = URL.createObjectURL(file);
-
-		return { ...record, image };
+		return record ? { ...record, base64: 'data:image/png;base64,' + record.base64 } : null;
 	}
 
 	async getRandomArt() {
@@ -117,19 +104,14 @@ export class MySubClassedDexie extends Dexie {
 			.orderBy('id')
 			.offset(Math.floor(Math.random() * (await this.arts.count())))
 			.limit(1)
-			.first()) as Art & { base64: string };
+			.first()) as Art;
 
-		const artist = (
-			art && art.artist_id ? await this.artists.get({ id: art?.artist_id }) : {}
-		) as Artist;
+		const artist = (await this.artists.get({ id: art?.artist_id })) as Artist;
 
-		const artFile = await lf.getFile('art', `${art.id}.png`);
-		const artistFile = await lf.getFile('artists', `${artist.id}.png`);
-
-		const artImage = URL.createObjectURL(artFile);
-		const artistImage = URL.createObjectURL(artistFile);
-
-		return { art, artist, artImage, artistImage };
+		return {
+			art: { ...art, base64: 'data:image/png;base64,' + art.base64 },
+			artist: { ...artist, base64: 'data:image/png;base64,' + artist.base64 }
+		};
 	}
 
 	async getRandomArtist() {

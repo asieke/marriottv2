@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Art, Initiate, Slideshow, Sentences, History } from './components';
 
-	// let steps = [History] as any;
-	let steps = [Initiate, Art, Slideshow, Sentences, History] as any;
+	let steps = [Initiate] as any;
+	// let steps = [Initiate, Art, Slideshow, Sentences, History] as any;
 
 	let currentStep = 0;
 

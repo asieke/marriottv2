@@ -31,15 +31,13 @@
 	onMount(async () => {
 		//get the max id from events
 
-		const max = await lf.getMaxFileName('events');
-
-		console.log(max);
-
 		const { data } = (await supabase
 			.from('events')
 			.select('id, image_query, title, summary')
-			.gte('id', max)
+			.eq('base64', '')
 			.order('id', { ascending: true })) as { data: Event[] };
+
+		console.log(data);
 
 		events = data;
 

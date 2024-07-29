@@ -1,26 +1,18 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { db } from '$lib/clients/dexie';
+	import { db, type Sentence } from '$lib/clients/dexie';
 
-	let image: string;
-	let text: string;
 	let interval: NodeJS.Timeout;
+	let record: Sentence | null = null;
 
-	// Function to fetch a random sentence and update base64 and text
-	const fetchRandomSentence = async () => {
-		const randomRecord = await db.getRandomSentence();
-		image = randomRecord?.image || '';
-		text = randomRecord?.text || '';
-	};
-
-	onMount(() => {
+	onMount(async () => {
 		// Fetch initial random sentence
-		fetchRandomSentence();
+		record = await db.getRandomSentence();
 
 		// Rotate image every 20 seconds
 		interval = setInterval(
-			() => {
-				fetchRandomSentence();
+			async () => {
+				record = await db.getRandomSentence();
 			},
 			5 * 60 * 1000
 		);
@@ -32,12 +24,18 @@
 	});
 </script>
 
-<div class="text-white grid grid-cols-2 gap-4">
-	<img src={image} alt="sentence" class="w-full h-full border-[2px] shadow-md rounded-lg" />
-	<div class="flex align-middle justify-center items-center text-center">
-		<h1 class="text-3xl leading-normal">{text}</h1>
+{#if record}
+	<div class="text-white grid grid-cols-2 gap-4">
+		<img
+			src={record.base64}
+			alt="sentence"
+			class="w-full h-full border-[2px] shadow-md rounded-lg"
+		/>
+		<div class="flex align-middle justify-center items-center text-center">
+			<h1 class="text-3xl leading-normal">{record.text}</h1>
+		</div>
 	</div>
-</div>
+{/if}
 
 <style>
 	/* Add your styles here */

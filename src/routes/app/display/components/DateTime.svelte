@@ -61,7 +61,7 @@
 	onDestroy(() => interval && clearInterval(interval));
 </script>
 
-<a href="/app/display/sync">
+<a href="/app/sync">
 	<h1 class="font-mono text-white w-full p-4 pb-8 text-2xl font-semibold">{displayDate}</h1>
 </a>
 <div class="clock" style="font-size:4em;">

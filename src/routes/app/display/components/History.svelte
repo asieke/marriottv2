@@ -1,36 +1,18 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { db } from '$lib/clients/dexie';
+	import { db, type Event } from '$lib/clients/dexie';
 
-	type Record = {
-		image: string;
-		id: number;
-		title: string;
-		date: string;
-		summary: string;
-		facts: string[];
-		questions: string[];
-	};
-
-	let record: Record | null = null;
+	let record: Event | null = null;
 
 	let interval: NodeJS.Timeout;
 
-	// Function to fetch a random sentence and update base64 and text
-	const fetchRandomSentence = async () => {
+	onMount(async () => {
+		// Fetch initial random sentence
 		record = await db.getRandomEvent();
 
-		console.log(record);
-	};
-
-	onMount(() => {
-		// Fetch initial random sentence
-		fetchRandomSentence();
-
-		// Rotate image every 20 seconds
 		interval = setInterval(
-			() => {
-				fetchRandomSentence();
+			async () => {
+				record = await db.getRandomEvent();
 			},
 			5 * 60 * 1000
 		);
@@ -44,9 +26,9 @@
 
 {#if record}
 	<div class="flex flex-col h-full space-y-3">
-		<div class="max-h-[300px] flex-grow" style="background-image: url({record.image});">
+		<div class="max-h-[300px] flex-grow" style="background-image: url({record.base64});">
 			<img
-				src={record.image}
+				src={record.base64}
 				style="backdrop-filter: blur(10px);"
 				alt="Alex"
 				class="object-contain mx-auto border-[2px] rounded-lg h-full w-full shadow-lg"
